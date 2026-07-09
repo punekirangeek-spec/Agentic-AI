@@ -17,3 +17,7 @@ Thumbs.db
 
 # IDE
 .idea/
+
+# Policy documents and vector DB (contains real/sensitive content)
+backend/policy_docs/
+backend/chroma_db/
