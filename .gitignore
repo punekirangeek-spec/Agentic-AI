@@ -21,3 +21,5 @@ Thumbs.db
 # Policy documents and vector DB (contains real/sensitive content)
 backend/policy_docs/
 backend/chroma_db/
+
+backend/generated_files/

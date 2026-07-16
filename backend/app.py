@@ -1,12 +1,17 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from google import genai
 import psycopg2
+from flask import send_from_directory
+
+from agent import run_agent
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)  # allows the React frontend (different port) to call this backend
 
 # Gemini client
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -18,6 +23,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
+
 def get_db_connection():
     return psycopg2.connect(
         user=DB_USER,
@@ -27,9 +33,11 @@ def get_db_connection():
         dbname=DB_NAME
     )
 
+
 @app.route("/")
 def home():
     return jsonify({"status": "Flask is running"})
+
 
 @app.route("/test-gemini")
 def test_gemini():
@@ -41,6 +49,7 @@ def test_gemini():
         return jsonify({"gemini_response": response.text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/test-db")
 def test_db():
@@ -55,6 +64,31 @@ def test_db():
         return jsonify({"employees": employees})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        user_message = data.get("message", "")
+
+        if not user_message.strip():
+            return jsonify({"error": "Empty message"}), 400
+
+        # employee_id hardcoded for now — real auth comes later
+        reply, generated_filename = run_agent(user_message, employee_id=1)
+
+        response_data = {"reply": reply}
+        if generated_filename:
+            response_data["download_url"] = f"http://127.0.0.1:5000/download/{generated_filename}"
+
+        return jsonify(response_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/download/<filename>")
+def download_file(filename):
+    return send_from_directory("generated_files", filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

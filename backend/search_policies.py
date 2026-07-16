@@ -47,7 +47,7 @@ def search_policy(query, top_k=3):
 
 if __name__ == "__main__":
     # Quick manual test
-    test_query = "How many paternity leaves can I take?"
+    test_query = "How many paternity leaves can I take"
     print(f"Query: {test_query}\n")
 
     results = search_policy(test_query)

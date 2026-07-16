@@ -36,6 +36,7 @@ function App() {
       const assistantMessage = {
         role: 'assistant',
         text: data.reply || data.error || 'No response received.',
+        downloadUrl: data.download_url || null,
       }
       setMessages((prev) => [...prev, assistantMessage])
     } catch (err) {
@@ -106,6 +107,16 @@ function App() {
                       ) : (
                         msg.text
                       )}
+                     {msg.downloadUrl && (
+                        <a href={msg.downloadUrl} className="download-link" download>
+                            <div className="file-info">
+                              <span className="file-name">
+                                  {decodeURIComponent(msg.downloadUrl.split('/').pop())}
+                              </span>
+                            <span className="file-action">Click to download</span>
+                           </div>
+                        </a>
+                     )}
                     </div>
                   </div>
                 ))}
