@@ -50,7 +50,7 @@ Gemini 2.5 Flash (the agent — decides what to do)
 
 ┌────────────┬─────────────────┬──────────────────┐
 
-↓            ↓                 ↓
+↓            ↓                 ↓                  ↓
 
 Policy search   HRMS query        File generation
 
